@@ -1,0 +1,12 @@
+# Dependências instaladas via npm — nunca vai pro Git, todo mundo reinstala
+# rodando "npm install" (o package.json já lista o que é necessário).
+node_modules/
+
+# Variáveis de ambiente com dados sensíveis (senha do banco, etc).
+# Cada pessoa/ambiente tem o seu próprio .env, nunca compartilhado no repositório.
+.env
+.env.local
+
+# Logs que o Node ou o npm podem gerar em caso de erro.
+*.log
+npm-debug.log*
