@@ -70,6 +70,15 @@ class UserModel {
         );
         return result.rows[0];
     }
+
+    static async updatePhone1(userId, phone1) {
+    const result = await pool.query(
+        `UPDATE users SET phone1 = $1 WHERE id = $2
+         RETURNING id, name, phone1`,
+        [phone1, userId]
+    );
+    return result.rows[0];
+    }
 }
 
 module.exports = UserModel;

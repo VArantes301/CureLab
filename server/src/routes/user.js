@@ -7,5 +7,7 @@ router.post('/create', userController.create);
 router.get('/list', userController.list);
 
 router.patch('/:userId/mascot', userController.updateMascot);
+router.patch('/:userId/addiction', userController.updateAddiction);
+router.patch('/:userId/phone', userController.updatePhone1);
 
 module.exports = router;

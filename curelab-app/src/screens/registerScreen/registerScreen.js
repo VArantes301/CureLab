@@ -8,13 +8,13 @@ export default function RegisterScreen({ navigation }) {
     const [password, setPassword] = useState('');
 
     async function handleRegister() {
-    console.log('cliquei no botão'); // linha nova, só pra debug
+    console.log('cliquei no botão');
     try {
         const newUser = await createUser({ name, email, password });
-        console.log('deu certo:', newUser); // linha nova
-        Alert.alert('Sucesso', 'Usuário ' + newUser.name + ' criado')
+        console.log('deu certo:', newUser); 
+        navigation.navigate('ProfileScreen', { userId: newUser.id });
     } catch (error) {
-        console.log('caiu no catch:', error); // linha nova
+        console.log('caiu no catch:', error);
         Alert.alert('Erro', error.message);
     }
 }
