@@ -18,6 +18,21 @@ class userService {
     static async listUser() {
         return await UserModel.findAll()
     }
+
+    static async login(identifier, password) {
+        if(!identifier || !password) {
+            throw new Error('Identifier and password are required');
+        }
+
+        const user = await UserModel.findByNameOrEmail(identifier)
+
+        if (!user || user.password !== password) {
+            throw new Error('Invalid credentials');
+        }
+
+        const { password: _, ...UserWithoutPassword} = user;
+        return UserWithoutPassword
+    }
 }
 
 module.exports = userService;

@@ -39,6 +39,14 @@ class UserModel {
     return result.rows[0];
 }
 
+    static async findByNameOrEmail(identifier) {
+        const result = await pool.query(
+            'SELECT * FROM users WHERE email = $1 OR name = $1',
+            [identifier]
+        );
+        return result.rows[0]
+    }
+
     
     static async updateAddiction(userId, addictionType) {
     const result = await pool.query(

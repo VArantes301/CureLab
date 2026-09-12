@@ -20,6 +20,20 @@ export async function createUser(userData) {
     return data
 }
 
+export async function loginUser(identifier, password) {
+    const response = await fetch(`${API_URL}/users/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier, password }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.erro || 'Erro ao fazer login');
+    }
+    return data;
+}
+
 export async function updateAddiction(userId, addiction_type) {
     const response = await fetch(`${API_URL}/users/${userId}/addiction`, {
         method: 'PATCH',
