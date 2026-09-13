@@ -1,18 +1,22 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { loginUser } from '../../services/userServices';
+import { UserContext } from '../../context/userContext';
+
 
 
 export default function LoginScreen({ navigation }) {
 
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
+    const { setUserId } = useContext(UserContext);
 
     async function handleLogin() {
         try {
             const user = await loginUser(identifier, password);
-            Alert.alert('Bem-vindo', `Login feito como ${user.name}`);
 
+            setUserId(user.id);
+            navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
         } catch(error) {
             Alert.alert('Erro', error.message);
 

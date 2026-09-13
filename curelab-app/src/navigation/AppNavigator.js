@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RegisterScreen from '../screens/registerScreen/registerScreen';
-import ProfileScreen from '../screens/profileScreen/profileScreen';
+import CompleteProfile from '../screens/CompleteProfile/CompleteProfile';
 import LoginScreen from '../screens/loginScreen/loginScreen';
 
 const Stack = createNativeStackNavigator();
@@ -16,8 +16,8 @@ export default function AppNavigator() {
                     options={{ title: 'Criar Conta' }}
                 />
                 <Stack.Screen
-                    name="ProfileScreen"
-                    component={ProfileScreen}
+                    name="CompleteProfile"
+                    component={CompleteProfile}
                     options={{ title: 'faça seu perfil'}}
                 />
                 <Stack.Screen

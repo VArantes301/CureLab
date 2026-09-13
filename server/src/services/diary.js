@@ -1,6 +1,7 @@
 const DiaryModel = require('../model/diary');
 const UserModel = require('../model/user');
 const getMotivationalMessage = require('../utils/mascotMessage');
+const { getNewlyUnlocked } = require('../utils/achievements')
 
 
 class diaryService {
@@ -15,13 +16,17 @@ class diaryService {
         }
 
         const diaryEntry = await DiaryModel.create(userId, content);
+        const oldLongestStreak = user.longest_streak;
         const updatedUser = await diaryService.updateStreak(user);
+        const newAchievements = getNewlyUnlocked(oldLongestStreak, updatedUser.longest_streak);
         const motivationalMessage = getMotivationalMessage(user.mascot);
 
         return {
             ...diaryEntry,
             current_streak: updatedUser.current_streak,
-            motivational_message: motivationalMessage
+            longest_streak: updatedUser.longest_streak,
+            motivational_message: motivationalMessage,
+            new_achievements: newAchievements,
         };
     }
 
@@ -51,7 +56,9 @@ class diaryService {
             }
         }
 
-        return await UserModel.updateStreak(user.id, newStreak, todayStr);
+        const newLongestStreak = Math.max(user.longest_streak, newStreak);
+
+        return await UserModel.updateStreak(user.id, newStreak, todayStr, newLongestStreak);
     }
 
     static async listEntries(userId) {

@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { updateAddiction, updateMascot, updatePhone1 } from '../../services/userServices';
 import { API_URL } from '../../services/api';
+import { UserContext } from '../../context/userContext';
+import { useContext } from 'react';
 
 const MASCOTS = [
     { value: 'cachorro', image: `${API_URL}/static/mascosts/cachorro.jpeg` },
@@ -21,8 +23,8 @@ const MASCOTS = [
     { value: 'sapo', image: `${API_URL}/static/mascosts/sapo.jpeg` },
 ];
 
-export default function ProfileScreen({ route, navigation }) {
-    const { userId } = route.params;
+export default function CompleteProfile({ route, navigation }) {
+    const { userId } = useContext(UserContext);
 
     const [addictionType, setAddictionType] = useState('');
     const [selectedMascot, setSelectedMascot] = useState(null);

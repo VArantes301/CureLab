@@ -1,18 +1,25 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { createUser } from '../../services/userServices';
+import { UserContext } from '../../context/userContext';
+import { useContext } from 'react';
+
 
 export default function RegisterScreen({ navigation }) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const { setUserId } = useContext(UserContext);
 
     async function handleRegister() {
     console.log('cliquei no botão');
+
     try {
         const newUser = await createUser({ name, email, password });
         console.log('deu certo:', newUser); 
-        navigation.navigate('ProfileScreen', { userId: newUser.id });
+
+        setUserId(newUser.id);
+        navigation.navigate('CompleteProfile');
     } catch (error) {
         console.log('caiu no catch:', error);
         Alert.alert('Erro', error.message);

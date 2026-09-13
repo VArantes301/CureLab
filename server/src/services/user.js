@@ -1,4 +1,7 @@
+const bcrypt = require('bcrypt');
 const UserModel = require('../model/user')
+
+const SALT_ROUNDS = 10
 
 class userService {
     static async createUser(data) {
@@ -12,7 +15,9 @@ class userService {
             throw new Error('A user with this email already exist');
         }
 
-        return await UserModel.create(data);
+        const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
+
+        return await UserModel.create({ ...data, password: hashedPassword });
     }
 
     static async listUser() {
@@ -26,7 +31,12 @@ class userService {
 
         const user = await UserModel.findByNameOrEmail(identifier)
 
-        if (!user || user.password !== password) {
+        if (!user) {
+            throw new Error('Invalid credentials');
+        }
+
+        const passwordMatches = await bcrypt.compare(password, user.password);
+        if (!passwordMatches) {
             throw new Error('Invalid credentials');
         }
 
