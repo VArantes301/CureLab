@@ -5,7 +5,10 @@ const { getNewlyUnlocked } = require('../utils/achievements')
 
 
 class diaryService {
-    static async createEntry(userId, content) {
+    static async createEntry(userId, title, content, imageUrls = []) {
+        if (!title || title.trim() === '') {
+            throw new Error('Diary title is required')
+        }
         if (!content || content.trim() === '') {
             throw new Error('Diary content is required');
         }
@@ -15,7 +18,12 @@ class diaryService {
             throw new Error('User not found');
         }
 
-        const diaryEntry = await DiaryModel.create(userId, content);
+        const diaryEntry = await DiaryModel.create(userId, title, content);
+
+        for (const imageUrl of imageUrls) {
+            await DiaryModel.addImage(diaryEntry.id, imageUrl);
+        }
+
         const oldLongestStreak = user.longest_streak;
         const updatedUser = await diaryService.updateStreak(user);
         const newAchievements = getNewlyUnlocked(oldLongestStreak, updatedUser.longest_streak);
@@ -23,6 +31,7 @@ class diaryService {
 
         return {
             ...diaryEntry,
+            images: imageUrls,
             current_streak: updatedUser.current_streak,
             longest_streak: updatedUser.longest_streak,
             motivational_message: motivationalMessage,
@@ -59,6 +68,14 @@ class diaryService {
         const newLongestStreak = Math.max(user.longest_streak, newStreak);
 
         return await UserModel.updateStreak(user.id, newStreak, todayStr, newLongestStreak);
+    }
+
+    static async getEntry(userId, diaryId) {
+        const diary = await DiaryModel.findById(diaryId, userId);
+        if (!diary) {
+            throw new Error('Diary not found');
+        }
+        return diary;
     }
 
     static async listEntries(userId) {
