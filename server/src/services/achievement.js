@@ -7,6 +7,7 @@ class achievementService {
         if (!user) {
             throw new Error('User not found');
         }
+
         return getAchievements(user.longest_streak);
     }
 }

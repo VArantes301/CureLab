@@ -11,7 +11,7 @@ const MASCOT_MESSAGES = {
 
     coelho: [
         'O coelho é rápido pra fugir do perigo, e você foi corajoso hoje ao encarar o seu.',
-        'Cada pulo do coelho é pra frente. Você também está indo pra frente, mesmo que devagar'
+        'Cada pulo do coelho é pra frente. Você também está indo pra frente, mesmo que devagar.'
     ],
 
     gato: [
@@ -19,7 +19,7 @@ const MASCOT_MESSAGES = {
         'Independência é a marca do gato — e a sua força de vontade hoje mostrou a mesma coisa.'
     ],
 
-    lontra : [
+    lontra: [
         'A lontra brinca até nos dias difíceis. Achar um motivo pra sorrir hoje já é uma vitória.',
         'Persistente como uma lontra nadando contra a correnteza — é assim que você está indo.'        
     ],
@@ -28,18 +28,16 @@ const MASCOT_MESSAGES = {
         'O sapo passa por uma transformação completa até virar o que é. Você também está se transformando, dia após dia.',
         'Cada metamorfose leva tempo. Confie no processo, assim como o sapo confia no dele.'
     ]
-}
+};
 
 const DEFAULT_MESSAGES = [
     'Cada diário escrito é um passo a mais na sua jornada. Continue assim.'
 ];
 
-function getMotivationMessage(mascot) {
+function getMotivationalMessage(mascot) {
     const messages = MASCOT_MESSAGES[mascot] || DEFAULT_MESSAGES;
-
     const randomIndex = Math.floor(Math.random() * messages.length);
-
-    return messages[randomIndex]
+    return messages[randomIndex];
 }
 
-module.exports = getMotivationMessage;
+module.exports = getMotivationalMessage;

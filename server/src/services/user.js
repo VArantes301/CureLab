@@ -1,35 +1,41 @@
 const bcrypt = require('bcrypt');
-const UserModel = require('../model/user')
+const UserModel = require('../model/user');
 
-const SALT_ROUNDS = 10
+const SALT_ROUNDS = 10;
 
 class userService {
     static async createUser(data) {
-
-        if(!data.name || !data.email || !data.password) {
-            throw new Error('Name, email and password they are required');
+        if (!data.name || !data.email || !data.password) {
+            throw new Error('Name, email and password are required');
         }
 
-        const existingUser = await UserModel.findByEmail(data.email);
+        const normalizedEmail = data.email.toLowerCase().trim();
+
+        const existingUser = await UserModel.findByEmail(normalizedEmail);
         if (existingUser) {
-            throw new Error('A user with this email already exist');
+            throw new Error('A user with this email already exists');
         }
 
         const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
 
-        return await UserModel.create({ ...data, password: hashedPassword });
+        return await UserModel.create({ 
+            ...data, 
+            email: normalizedEmail, 
+            password: hashedPassword 
+        });
     }
 
     static async listUser() {
-        return await UserModel.findAll()
+        return await UserModel.findAll();
     }
 
     static async login(identifier, password) {
-        if(!identifier || !password) {
+        if (!identifier || !password) {
             throw new Error('Identifier and password are required');
         }
 
-        const user = await UserModel.findByNameOrEmail(identifier)
+        const normalizedIdentifier = identifier.toLowerCase().trim();
+        const user = await UserModel.findByNameOrEmail(normalizedIdentifier);
 
         if (!user) {
             throw new Error('Invalid credentials');
@@ -40,8 +46,8 @@ class userService {
             throw new Error('Invalid credentials');
         }
 
-        const { password: _, ...UserWithoutPassword} = user;
-        return UserWithoutPassword
+        const { password: _, ...UserWithoutPassword } = user;
+        return UserWithoutPassword;
     }
 }
 

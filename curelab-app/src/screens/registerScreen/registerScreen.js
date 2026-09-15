@@ -1,76 +1,77 @@
-import { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { createUser } from '../../services/userServices';
 import { UserContext } from '../../context/userContext';
-import { useContext } from 'react';
-
 
 export default function RegisterScreen({ navigation }) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { setUserId } = useContext(UserContext);
+    const { login } = useContext(UserContext);
 
     async function handleRegister() {
-    console.log('cliquei no botão');
+        if (!name.trim() || !email.trim() || !password.trim()) {
+            Alert.alert('Atenção', 'Preencha todos os campos.');
+            return;
+        }
 
-    try {
-        const newUser = await createUser({ name, email, password });
-        console.log('deu certo:', newUser); 
+        try {
+            const newUser = await createUser({ name, email, password });
+            await login(newUser);
 
-        setUserId(newUser.id);
-        navigation.navigate('CompleteProfile');
-    } catch (error) {
-        console.log('caiu no catch:', error);
-        Alert.alert('Erro', error.message);
+            navigation.navigate('CompleteProfile');
+        } catch (error) {
+            Alert.alert('Erro', error.message || 'Falha ao criar conta.');
+        }
     }
-}
 
-    return(
-        <View style ={styles.container}>
+    return (
+        <View style={styles.container}>
             <Text style={styles.title}>Cadastro</Text>
 
             <TextInput
                 style={styles.input}
-                placeholder='Nome'
+                placeholder="Nome"
                 value={name}
                 onChangeText={setName}
             />
 
             <TextInput
                 style={styles.input}
-                placeholder='Email'
+                placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
-                autoCapitalize='none'    
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoCorrect={false}
             />
 
             <TextInput
                 style={styles.input}
-                placeholder='Senha'
+                placeholder="Senha"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                autoCapitalize="none"
             />
 
-            <Button title='Cadastrar' onPress={handleRegister} />
+            <Button title="Cadastrar" onPress={handleRegister} />
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
-         flex: 1, 
-         justifyContent: 'center', 
-         padding: 24 
+        flex: 1, 
+        justifyContent: 'center', 
+        padding: 24 
     },
-
     title: {
         fontSize: 24,
         marginBottom: 16,
-        textAlign: 'center'
+        textAlign: 'center',
+        fontWeight: 'bold'
     },
-
     input: {
         borderWidth: 1,
         borderColor: '#7e7c7c',
@@ -78,5 +79,4 @@ const styles = StyleSheet.create({
         padding: 12,
         marginBottom: 12
     }
-
-})
+});

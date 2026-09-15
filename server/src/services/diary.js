@@ -20,9 +20,11 @@ class diaryService {
 
         const diaryEntry = await DiaryModel.create(userId, title, content);
 
-        for (const imageUrl of imageUrls) {
-            await DiaryModel.addImage(diaryEntry.id, imageUrl);
-        }
+        if (imageUrls.length > 0) {
+            await Promise.all(
+                imageUrls.map(url => DiaryModel.addImage(diaryEntry.id, url))
+    );
+}
 
         const oldLongestStreak = user.longest_streak;
         const updatedUser = await diaryService.updateStreak(user);
@@ -40,35 +42,40 @@ class diaryService {
     }
 
     static async updateStreak(user) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const todayStr = today.toISOString().split('T')[0];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-        let newStreak;
 
-        if (!user.last_diary_date) {
-            newStreak = 1;
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
+
+    let newStreak;
+
+    if (!user.last_diary_date) {
+        newStreak = 1;
+    } else {
+        const lastDate = new Date(user.last_diary_date);
+        lastDate.setHours(0, 0, 0, 0);
+
+        const diffInTime = today.getTime() - lastDate.getTime();
+        const diffInDays = Math.round(diffInTime / (1000 * 3600 * 24));
+
+        if (diffInDays === 0) {
+            newStreak = user.current_streak;
+        } else if (diffInDays === 1) {
+            newStreak = user.current_streak + 1;
         } else {
-            const lastDate = new Date(user.last_diary_date);
-            lastDate.setHours(0, 0, 0, 0);
-
-            const diffInDays = Math.round(
-                (today - lastDate) / (1000 * 60 * 60 * 24)
-            );
-
-            if (diffInDays === 0) {
-                newStreak = user.current_streak;
-            } else if (diffInDays === 1) {
-                newStreak = user.current_streak + 1;
-            } else {
-                newStreak = 1;
-            }
+            newStreak = 1;
         }
-
-        const newLongestStreak = Math.max(user.longest_streak, newStreak);
-
-        return await UserModel.updateStreak(user.id, newStreak, todayStr, newLongestStreak);
     }
+
+    const oldLongest = user.longest_streak || 0;
+    const newLongestStreak = Math.max(oldLongest, newStreak);
+
+    return await UserModel.updateStreak(user.id, newStreak, todayStr, newLongestStreak);
+}
 
     static async getEntry(userId, diaryId) {
         const diary = await DiaryModel.findById(diaryId, userId);

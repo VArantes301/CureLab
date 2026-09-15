@@ -1,23 +1,22 @@
 const userService = require('../services/user');
-const UserModel = require('../model/user')
+const UserModel = require('../model/user');
 
 class userController {
     static async create(req, res) {
         try {
             const newUser = await userService.createUser(req.body);
-
-            return res.status(201).json(newUser)
+            return res.status(201).json(newUser);
         } catch (error) {
             return res.status(400).json({ erro: error.message });
         }
     }
 
-    static async login(req,res) {
+    static async login(req, res) {
         try {
             const { identifier, password } = req.body;
             const user = await userService.login(identifier, password);
             return res.status(200).json(user);
-        } catch(error) {
+        } catch (error) {
             return res.status(400).json({ erro: error.message });
         }
     }
@@ -25,9 +24,9 @@ class userController {
     static async list(req, res) {
         try {
             const users = await userService.listUser();
-            return res.status(200).json(users)
+            return res.status(200).json(users);
         } catch (error) {
-            return res.status(500).json({ erro: 'intenral server error.' })
+            return res.status(500).json({ erro: 'Internal server error.' });
         }
     }
 

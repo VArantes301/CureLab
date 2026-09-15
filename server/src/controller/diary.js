@@ -4,13 +4,14 @@ class diaryController {
     static async create(req, res) {
         try {
             const { userId } = req.params;
-            const { title, content,  } = req.body;
+            const { title, content } = req.body;
 
             const imageUrls = (req.files || []).map(
-                (file) => `${req.protocol}://${req.get('host')}/static/diaryImages/${file.filename}`
-            )
+                (file) => `${req.protocol}://${req.get('host')}/diaryImages/${file.filename}`
+            );
 
-            const newEntry = await diaryService.createEntry(userId, content);
+            const newEntry = await diaryService.createEntry(userId, title, content, imageUrls);
+            
             return res.status(201).json(newEntry);
         } catch (error) {
             return res.status(400).json({ erro: error.message });
@@ -34,7 +35,7 @@ class diaryController {
             const entry = await diaryService.getEntry(userId, diaryId);
             return res.status(200).json(entry);
         } catch (error) {
-            return res.status(400).json({ erro: error.message })
+            return res.status(400).json({ erro: error.message });
         }
     }
 }

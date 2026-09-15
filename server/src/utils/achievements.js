@@ -8,10 +8,10 @@ const ACHIEVEMENTS = [
 ]
 
 function getAchievements(longestStreak) {
-    return ACHIEVEMENTS.map((achievements) => ({
-        ...achievements,
-        unlocked: longestStreak >= achievements.days,
-    }))
+    return ACHIEVEMENTS.map((achievement) => ({
+        ...achievement,
+        unlocked: longestStreak >= achievement.days,
+    }));
 }
 
 function getNewlyUnlocked(oldLongestStreak, newLongestStreak) {

@@ -1,11 +1,11 @@
-import { useState, useCallback, useContext } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback, useContext } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { UserContext } from '../../context/userContext';
 import { listDiaryEntries } from '../../services/diaryServices';
 
-export default function DiaryListScreen() {
-    const { userId } = useContext(UserContext);
+export default function DiaryListScreen({ navigation }) {
+    const { user } = useContext(UserContext);
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -14,9 +14,11 @@ export default function DiaryListScreen() {
             let isActive = true;
 
             async function fetchEntries() {
+                if (!user?.id) return;
+
                 setLoading(true);
                 try {
-                    const data = await listDiaryEntries(userId);
+                    const data = await listDiaryEntries(user.id);
                     if (isActive) setEntries(data);
                 } catch (error) {
                     console.log('Erro ao buscar diários:', error);
@@ -27,26 +29,42 @@ export default function DiaryListScreen() {
 
             fetchEntries();
             return () => { isActive = false; };
-        }, [userId])
+        }, [user?.id])
     );
 
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) ? '' : date.toLocaleDateString('pt-BR');
+    }
+
     if (loading) {
-        return <ActivityIndicator style={{ flex: 1 }} />;
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#2E7D32" />
+            </View>
+        );
     }
 
     return (
         <FlatList
             style={styles.container}
+            contentContainerStyle={styles.listContent}
             data={entries}
             keyExtractor={(item) => String(item.id)}
-            ListEmptyComponent={<Text style={styles.empty}>Nenhum diário ainda.</Text>}
+            ListEmptyComponent={
+                <Text style={styles.empty}>Nenhum registro no diário ainda.</Text>
+            }
             renderItem={({ item }) => (
-                <View style={styles.entry}>
+                <TouchableOpacity
+                    style={styles.entryCard}
+                    onPress={() => navigation.navigate('DiaryDetail', { diaryId: item.id })}
+                >
+                    <Text style={styles.entryTitle}>{item.title}</Text>
                     <Text style={styles.date}>
-                        {new Date(item.created_at).toLocaleDateString('pt-BR')}
+                        {formatDate(item.created_at)}
                     </Text>
-                    <Text style={styles.content}>{item.content}</Text>
-                </View>
+                </TouchableOpacity>
             )}
         />
     );
@@ -55,29 +73,37 @@ export default function DiaryListScreen() {
 const styles = StyleSheet.create({
     container: { 
         flex: 1, 
-        padding: 16 
     },
-
+    listContent: {
+        padding: 16,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     empty: { 
         textAlign: 'center', 
         marginTop: 32, 
-        color: '#888' 
+        color: '#888',
+        fontSize: 14 
     },
-
-    entry: { 
-        borderBottomWidth: 1, 
-        borderBottomColor: '#eee', 
-        paddingVertical: 12 
+    entryCard: { 
+        backgroundColor: '#FFF',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
     },
-
+    entryTitle: { 
+        fontSize: 16, 
+        fontWeight: 'bold',
+        color: '#333'
+    },
     date: { 
         fontSize: 12, 
         color: '#888', 
-        marginBottom: 4 
+        marginTop: 6 
     },
-
-    content: { 
-        fontSize: 16 
-    },
-
 });
