@@ -14,6 +14,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { createDiaryEntry } from '../../services/diaryServices';
 import { UserContext } from '../../context/userContext';
+import { MOOD_OPTIONS } from '../../utils/moodIcons';
 
 export default function NewDiaryScreen() {
     const { user } = useContext(UserContext);
@@ -21,6 +22,7 @@ export default function NewDiaryScreen() {
     const [content, setContent] = useState('');
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [mood, setMood] = useState(null);
 
     async function pickImage() {
         if (images.length >= 4) {
@@ -78,6 +80,10 @@ export default function NewDiaryScreen() {
             Alert.alert('Atenção', 'Escreva algo antes de salvar.');
             return;
         }
+        if (mood === null) {
+            Alert.alert('Atenção', 'escolha uma nota pro seu dia.')
+            return;
+        }
         if (!user?.id) {
             Alert.alert('Erro', 'Usuário não autenticado.');
             return;
@@ -86,10 +92,11 @@ export default function NewDiaryScreen() {
         setLoading(true);
 
         try {
-            const result = await createDiaryEntry(user.id, title, content, images);
+            const result = await createDiaryEntry(user.id, title, content, mood, images);
             setTitle('');
             setContent('');
             setImages([]);
+            setMood(null);
 
             let message = `Streak atual: ${result.current_streak} dia(s).\n\n${result.motivational_message}`;
 
@@ -140,6 +147,23 @@ export default function NewDiaryScreen() {
                         <Text style={styles.addButtonText}>+</Text>
                     </TouchableOpacity>
                 )}
+            </View>
+
+            <Text style={styles.label}>Como você está se sentindo?</Text>
+            <View style={styles.moodRow}>
+                {MOOD_OPTIONS.map((option) => (
+                    <TouchableOpacity
+                        key={option.value}
+                        onPress={() => setMood(option.value)}
+                        style={[
+                            styles.moodItem,
+                            mood === option.value && styles.moodItemSelected,
+                        ]}
+                        disabled={loading}
+                    >
+                        <Text style={styles.moodEmoji}>{option.emoji}</Text>
+                    </TouchableOpacity>
+                ))}
             </View>
 
             {loading ? (
@@ -205,5 +229,23 @@ const styles = StyleSheet.create({
     addButtonText: { 
         fontSize: 28, 
         color: '#999' 
+    },
+        moodRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 24,
+    },
+    moodItem: {
+        padding: 8,
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: 'transparent',
+    },
+    moodItemSelected: {
+        borderColor: '#4CAF50',
+        backgroundColor: '#E8F5E9',
+    },
+    moodEmoji: {
+        fontSize: 28,
     },
 });

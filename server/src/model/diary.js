@@ -2,12 +2,12 @@ const pool = require('../config/db')
 
 class DiaryModel {
 
-    static async create(userId, title, content) {
+    static async create(userId, title, content, mood) {
     const result = await pool.query(
-        `INSERT INTO diaries (user_id, title, content)
-         VALUES ($1, $2, $3)
-         RETURNING id, user_id, title, content, created_at`,
-        [userId, title, content]
+        `INSERT INTO diaries (user_id, title, content, mood)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id, user_id, title, content, created_at, mood`,
+        [userId, title, content, mood]
         );
 
         return result.rows[0];
@@ -25,7 +25,7 @@ class DiaryModel {
 
     static async findByUser(userId) {
         const result = await pool.query(
-            `SELECT id, title, created_at
+            `SELECT id, title, mood, created_at
              FROM diaries
              WHERE user_id = $1
              ORDER BY created_at DESC`,
@@ -36,7 +36,7 @@ class DiaryModel {
 
     static async findById(diaryId, userId) {
         const diaryresult = await pool.query(
-            'SELECT id, title, content, created_at FROM diaries WHERE id = $1 AND user_id = $2',
+            'SELECT id, title, content, mood, created_at FROM diaries WHERE id = $1 AND user_id = $2',
             [diaryId, userId]
         );
         const diary = diaryresult.rows[0];

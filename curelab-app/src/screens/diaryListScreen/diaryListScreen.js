@@ -3,6 +3,7 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity }
 import { useFocusEffect } from '@react-navigation/native';
 import { UserContext } from '../../context/userContext';
 import { listDiaryEntries } from '../../services/diaryServices';
+import { getMoodEmoji } from '../../utils/moodIcons';
 
 export default function DiaryListScreen({ navigation }) {
     const { user } = useContext(UserContext);
@@ -60,10 +61,11 @@ export default function DiaryListScreen({ navigation }) {
                     style={styles.entryCard}
                     onPress={() => navigation.navigate('DiaryDetail', { diaryId: item.id })}
                 >
-                    <Text style={styles.entryTitle}>{item.title}</Text>
-                    <Text style={styles.date}>
-                        {formatDate(item.created_at)}
-                    </Text>
+                    <View style={styles.entryHeader}>
+                        <Text style={styles.entryTitle}>{item.title}</Text>
+                        <Text style={styles.moodEmoji}>{getMoodEmoji(item.mood)}</Text>
+                    </View>
+                    <Text style={styles.date}>{formatDate(item.created_at)}</Text>
                 </TouchableOpacity>
             )}
         />
@@ -71,8 +73,8 @@ export default function DiaryListScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    container: { 
-        flex: 1, 
+    container: {
+        flex: 1,
     },
     listContent: {
         padding: 16,
@@ -82,13 +84,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    empty: { 
-        textAlign: 'center', 
-        marginTop: 32, 
+    empty: {
+        textAlign: 'center',
+        marginTop: 32,
         color: '#888',
-        fontSize: 14 
+        fontSize: 14,
     },
-    entryCard: { 
+    entryCard: {
         backgroundColor: '#FFF',
         borderRadius: 8,
         padding: 16,
@@ -96,14 +98,22 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E0E0E0',
     },
-    entryTitle: { 
-        fontSize: 16, 
-        fontWeight: 'bold',
-        color: '#333'
+    entryHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    date: { 
-        fontSize: 12, 
-        color: '#888', 
-        marginTop: 6 
+    entryTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    moodEmoji: {
+        fontSize: 20,
+    },
+    date: {
+        fontSize: 12,
+        color: '#888',
+        marginTop: 6,
     },
 });

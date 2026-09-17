@@ -1,10 +1,11 @@
 import { API_URL } from './api';
 
-export async function createDiaryEntry(userId, title, content, images = []) {
+export async function createDiaryEntry(userId, title, content, mood, images = []) {
     const formData = new FormData();
 
     formData.append('title', title);
     formData.append('content', content);
+    formData.append('mood', String(mood))
 
     images.forEach((image, index) => {
         formData.append('images', {

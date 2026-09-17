@@ -5,7 +5,7 @@ const { getNewlyUnlocked } = require('../utils/achievements')
 
 
 class diaryService {
-    static async createEntry(userId, title, content, imageUrls = []) {
+    static async createEntry(userId, title, content, mood, imageUrls = []) {
         if (!title || title.trim() === '') {
             throw new Error('Diary title is required')
         }
@@ -13,12 +13,17 @@ class diaryService {
             throw new Error('Diary content is required');
         }
 
+        const moodNumber = Number(mood);
+        if (Number.isNaN(moodNumber) || moodNumber < 0 || moodNumber > 5) {
+            throw new Error('Mood must be a number between 0 and 5')
+        }
+
         const user = await UserModel.findById(userId);
         if (!user) {
             throw new Error('User not found');
         }
 
-        const diaryEntry = await DiaryModel.create(userId, title, content);
+        const diaryEntry = await DiaryModel.create(userId, title, content, moodNumber);
 
         if (imageUrls.length > 0) {
             await Promise.all(

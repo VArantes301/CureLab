@@ -4,13 +4,13 @@ class diaryController {
     static async create(req, res) {
         try {
             const { userId } = req.params;
-            const { title, content } = req.body;
+            const { title, content, mood } = req.body;
 
             const imageUrls = (req.files || []).map(
                 (file) => `${req.protocol}://${req.get('host')}/diaryImages/${file.filename}`
             );
 
-            const newEntry = await diaryService.createEntry(userId, title, content, imageUrls);
+            const newEntry = await diaryService.createEntry(userId, title, content, mood, imageUrls);
             
             return res.status(201).json(newEntry);
         } catch (error) {
