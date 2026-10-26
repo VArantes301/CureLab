@@ -1,6 +1,7 @@
 #include "crow.h" //configura as rotas as rotas 
 #include "config/env.hpp"
 #include "model/user.hpp"
+#include "model/diary.hpp"
 
 int main() {
     Env env;
@@ -18,6 +19,9 @@ int main() {
 
     UserModel userModel(db);
     userModel.createTable();
+
+    DiaryModel diaryModel(db);
+    diaryModel.createTable();
 
     crow::SimpleApp app;
     CROW_ROUTE(app, "/")([]() { return "CureLab C++ no ar"; });
