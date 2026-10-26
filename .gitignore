@@ -1,0 +1,13 @@
+# Pasta de build do CMake/vcpkg
+build/
+vcpkg_installed/
+
+# Log de configuração
+configure.log
+
+# Segredos
+.env
+
+# Arquivos de editor
+.vscode/
+.idea/

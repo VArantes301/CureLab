@@ -1,0 +1,8 @@
+{
+  "dependencies": [
+    "libpqxx",
+    "crow",
+    "nlohmann-json",
+    "libsodium"
+  ]
+}
